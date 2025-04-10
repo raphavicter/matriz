@@ -1,0 +1,26 @@
+function calcularResultados() {
+  // Coletar valores das respostas (convertendo para número)
+  const respostas = [];
+  steps.forEach(step => {
+    const selected = step.querySelector('input[type="radio"]:checked');
+    if (selected) respostas.push(parseFloat(selected.value));
+  });
+  if (respostas.length !== 5) {
+    console.error('Nem todas as respostas foram coletadas.');
+    return;
+  }
+  // Cálculos das médias em porcentagem
+  const mediaVendas = ((respostas[0] + respostas[1]) / 2) * 100;
+  const mediaGestao = ((respostas[2] + respostas[3] + respostas[4]) / 3) * 100;
+  
+  // Armazenar para uso no gráfico
+  window.resultados = {
+    mediaVendas,
+    mediaGestao
+  };
+  
+  // Mostrar campos de input para percepção/meta e ocultar questionário
+  document.getElementById('quiz').style.display = 'none';
+  document.getElementById('navigation').style.display = 'none';
+  document.getElementById('finalInputs').style.display = 'block';
+}
