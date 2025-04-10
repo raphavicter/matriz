@@ -1,0 +1,13 @@
+// Supondo que já temos o contexto 'ctx' e chartArea definido
+const ctx = chart.ctx;
+const chartArea = chart.chartArea;
+const gradient = ctx.createLinearGradient(chartArea.left, chartArea.bottom, chartArea.right, chartArea.top);
+// Gradiente do vermelho (bottom-left) ao verde (top-right)
+gradient.addColorStop(0, 'rgba(255, 0, 0, 0.5)');   // vermelho semi-transparente
+gradient.addColorStop(1, 'rgba(0, 255, 0, 0.5)');   // verde semi-transparente
+
+// Desenha um retângulo cobrindo toda a área do gráfico com o gradiente
+ctx.save();
+ctx.fillStyle = gradient;
+ctx.fillRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
+ctx.restore();
