@@ -1,0 +1,41 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background: #f9f9f9;
+}
+#quiz p {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+label {
+  display: block;
+  margin: 8px 0;
+}
+#navigation {
+  margin-top: 10px;
+}
+button {
+  background-color: #1976d2;
+  color: #fff;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+button#prevBtn {
+  background-color: #555;
+}
+button:hover {
+  opacity: 0.8;
+}
+#finalInputs {
+  margin-top: 20px;
+}
+#finalInputs label {
+  font-weight: normal;
+}
+#finalInputs input {
+  width: 60px;
+  margin-left: 5px;
+}
