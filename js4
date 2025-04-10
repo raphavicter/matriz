@@ -1,0 +1,98 @@
+document.getElementById('plotBtn').addEventListener('click', () => {
+  // Obter valores do usuário
+  const percepcaoGestao = parseFloat(document.getElementById('percepcaoGestao').value) || 0;
+  const percepcaoVendas = parseFloat(document.getElementById('percepcaoVendas').value) || 0;
+  const metaGestao = parseFloat(document.getElementById('metaGestao').value) || 0;
+  const metaVendas = parseFloat(document.getElementById('metaVendas').value) || 0;
+  
+  // Valores fixos de referência (podem ser configurados no topo do script)
+  const referenciaGestao = 95;
+  const referenciaVendas = 90;
+  
+  // Dados calculados (das médias, previamente armazenadas)
+  const realGestao = window.resultados.mediaGestao; // em percentual
+  const realVendas = window.resultados.mediaVendas; // em percentual
+
+  // Função auxiliar para normalizar (0-100%) em escala definida
+  const normGestao = val => (val / 100) * 13;
+  const normVendas = val => (val / 100) * 12;
+  
+  // Preparar dados para o gráfico
+  const dataPoints = [
+    { x: normGestao(realGestao), y: normVendas(realVendas), label: 'Maturidade Real', backgroundColor: 'blue' },
+    { x: normGestao(percepcaoGestao), y: normVendas(percepcaoVendas), label: 'Percepção Atual', backgroundColor: 'orange' },
+    { x: normGestao(metaGestao), y: normVendas(metaVendas), label: 'Meta Desejada', backgroundColor: 'green' },
+    { x: normGestao(referenciaGestao), y: normVendas(referenciaVendas), label: 'Referência', backgroundColor: 'red' }
+  ];
+  
+  // Destruir gráfico anterior se existir (para poder replotar)
+  if (window.scatterChart) {
+    window.scatterChart.destroy();
+  }
+  
+  // Obter contexto do canvas
+  const ctx = document.getElementById('resultadoGrafico').getContext('2d');
+  
+  // Criar o gráfico de dispersão
+  window.scatterChart = new Chart(ctx, {
+    type: 'scatter',
+    data: {
+      datasets: dataPoints.map(point => ({
+        label: point.label,
+        data: [ { x: point.x, y: point.y } ],
+        backgroundColor: point.backgroundColor,
+        borderColor: point.backgroundColor,
+        pointRadius: 6
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          title: { display: true, text: 'Gestão (0 a 13)' },
+          min: 0,
+          max: 13
+        },
+        y: {
+          title: { display: true, text: 'Vendas (0 a 12)' },
+          min: 0,
+          max: 12
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'top'
+        },
+        tooltip: {
+          callbacks: {
+            label: context => {
+              // Exibe valores reais em % no tooltip além das coordenadas no gráfico
+              let label = context.dataset.label || '';
+              if (label) label += ': ';
+              const xVal = (context.parsed.x / 13 * 100).toFixed(1);
+              const yVal = (context.parsed.y / 12 * 100).toFixed(1);
+              label += `Gestão ${xVal}%, Vendas ${yVal}%`;
+              return label;
+            }
+          }
+        }
+      }
+    },
+    plugins: [{
+      // Plugin para desenhar o fundo de gradiente vermelho->verde na área do gráfico
+      id: 'customBackground',
+      beforeDraw: chart => {
+        const { ctx, chartArea } = chart;
+        if (!chartArea) return; // Chart ainda não está pronto
+        const gradient = ctx.createLinearGradient(chartArea.left, chartArea.bottom, chartArea.right, chartArea.top);
+        gradient.addColorStop(0, '#f00'); // vermelho
+        gradient.addColorStop(1, '#0f0'); // verde
+        ctx.save();
+        ctx.fillStyle = gradient;
+        ctx.fillRect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
+        ctx.restore();
+      }
+    }]
+  });
+});
